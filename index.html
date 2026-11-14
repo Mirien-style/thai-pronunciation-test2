@@ -8,74 +8,81 @@
   body { font-family: sans-serif; background: #fff7ed; padding: 20px; max-width: 800px; margin: auto; }
   h1 { text-align: center; }
   .card { background: white; border-radius: 16px; padding: 20px; margin: 16px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.08); text-align: center; }
-  .thai { font-size: 42px; font-weight: bold; color: #1a1a1a; }
+  .thai { font-size: 64px; font-weight: bold; }
+  .pinyin { font-size: 20px; color: #ff8a00; font-weight: bold; margin-top: 6px; }
   .trans { font-size: 18px; color: #555; margin-top: 8px; }
-  .trans span { display: inline-block; margin: 0 8px; }
-  button { margin-top: 14px; font-size: 18px; padding: 10px 22px; border: none; border-radius: 999px; background: #ff8a00; color: white; cursor: pointer; }
+  .tip { font-size: 15px; color: #888; margin-top: 6px; }
+  button { margin-top: 14px; font-size: 18px; padding: 12px 24px; border: none; border-radius: 999px; background: #ff8a00; color: white; cursor: pointer; }
   button:hover { background: #e67a00; }
-  .add-box { background: #fff; border: 2px dashed #ffb066; border-radius: 16px; padding: 20px; margin-top: 30px; text-align: center; }
-  input { font-size: 18px; padding: 10px; margin: 5px; border-radius: 10px; border: 1px solid #ddd; width: 80%; max-width: 300px; }
+  .compare { background: #fff3e0; padding: 16px; border-radius: 14px; text-align: center; margin: 16px 0; }
 </style>
 </head>
 <body>
 
-<h1>🇹🇭 泰文發音學習</h1>
-<p style="text-align:center;">點 🔊 就會用 Google 翻譯的泰文語音念出來</p>
+<h1>🇹🇭 泰文發音</h1>
+<p style="text-align:center;">這 3 個是自己嵌入的 mp3，播出來是最準的泰文，不是用電腦內建的聲音</p>
+
+<div class="compare">
+  <b>🎧 建議練習方式：</b><br>
+  先按 กะ，聽短音<br>
+  再按 กา，聽長音<br>
+  來回對比 3 次，你就會聽出差別了
+</div>
 
 <div id="list"></div>
 
-<div class="add-box">
-  <h3>➕ 自己新增單字</h3>
-  <input id="newThai" placeholder="輸入泰文，例如 ขอบคุณ">
-  <input id="newZh" placeholder="中文翻譯，例如 謝謝">
-  <input id="newEn" placeholder="英文翻譯，例如 Thank you">
-  <br>
-  <button onclick="addWord()">新增到列表</button>
-</div>
-
 <script>
-const words = [
-  { thai: "สวัสดี", zh: "你好", en: "Hello" },
-  { thai: "ขอบคุณ", zh: "謝謝", en: "Thank you" },
-  { thai: "ใช่", zh: "是 / 對", en: "Yes" },
-  { thai: "ไม่ใช่", zh: "不是", en: "No" },
-  { thai: "รัก", zh: "愛", en: "Love" },
-  { thai: "กินข้าว", zh: "吃飯", en: "Eat rice / Have a meal" },
-  { thai: "ห้องน้ำอยู่ที่ไหน", zh: "廁所在哪裡？", en: "Where is the bathroom?" },
-  { thai: "เท่าไหร่", zh: "多少錢？", en: "How much?" },
+var words = [
+  {
+    thai: "กะ",
+    pinyin: "kà / 短音 a",
+    zh: "短音 a，像「嘎」短促一下就停",
+    en: "Short A sound",
+    file: "ka-short.mp3",
+    tip: "嘴巴張開，短促有力，不要拉長"
+  },
+  {
+    thai: "กา",
+    pinyin: "kaa / 長音 a",
+    zh: "長音 a，像「嘎～」要拉長",
+    en: "Long A sound",
+    file: "kaa-long.mp3",
+    tip: "跟 กะ 一樣的嘴型，但聲音要拉長一倍"
+  },
+  {
+    thai: "กิ",
+    pinyin: "kì / 短音 i",
+    zh: "短音 i，像「基」短促",
+    en: "Short I sound",
+    file: "ki-short.mp3",
+    tip: "嘴角往兩邊拉，短促的 i 音"
+  },
 ];
 
-function speak(fileName) {
-  const audio = new Audio(fileName);
+function speak(file, thaiText) {
+  // 1. 先試著播你自己嵌入的 mp3，這個最準
+  var audio = new Audio(file);
   audio.volume = 1.0;
-  audio.play();
-}
-
-function render() {
-  const list = document.getElementById('list');
-  list.innerHTML = '';
-  words.forEach(w => {
-    const div = document.createElement('div');
-    div.className = 'card';
-    div.innerHTML = `
-      <div class="thai">${w.thai}</div>
-      <div class="trans"><span>中文：${w.zh}</span> | <span>English：${w.en}</span></div>
-      <button onclick="speak('sawadee.mp3')">🔊 播放發音</button>
-    `;
-    list.appendChild(div);
+  audio.play().catch(function() {
+    // 2. 如果 mp3 還沒上傳，就先用電腦內建的頂著用
+    alert("找不到 " + file + "，請先把 mp3 上傳到 GitHub");
+    var u = new SpeechSynthesisUtterance(thaiText);
+    u.lang = 'th-TH';
+    u.rate = 1.0;
+    window.speechSynthesis.speak(u);
   });
 }
 
-function addWord() {
-  const thai = document.getElementById('newThai').value.trim();
-  const zh = document.getElementById('newZh').value.trim();
-  const en = document.getElementById('newEn').value.trim();
-  if (!thai) { alert('請先輸入泰文'); return; }
-  words.push({ thai, zh: zh || '-', en: en || '-' });
-  render();
-  document.getElementById('newThai').value = '';
-  document.getElementById('newZh').value = '';
-  document.getElementById('newEn').value = '';
+function render() {
+  var list = document.getElementById('list');
+  list.innerHTML = '';
+  for (var i = 0; i < words.length; i++) {
+    var w = words[i];
+    var div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = '<div class="thai">' + w.thai + '</div><div class="pinyin">' + w.pinyin + '</div><div class="trans">中文：' + w.zh + '<br>English：' + w.en + '</div><div class="tip">💡 ' + w.tip + '</div><button onclick="speak(\'' + w.file + '\', \'' + w.thai + '\')">🔊 播放發音（嵌入 mp3）</button>';
+    list.appendChild(div);
+  }
 }
 
 render();
