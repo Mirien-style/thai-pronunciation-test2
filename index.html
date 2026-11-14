@@ -5,84 +5,181 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>泰文基礎發音學習</title>
 <style>
-  body { font-family: sans-serif; background: #fff7ed; padding: 20px; max-width: 800px; margin: auto; }
+  body { font-family: sans-serif; background: #fff7ed; padding: 20px; max-width: 1200px; margin: auto; }
   h1 { text-align: center; }
-  .card { background: white; border-radius: 16px; padding: 20px; margin: 16px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.08); text-align: center; }
-  .thai { font-size: 64px; font-weight: bold; }
-  .pinyin { font-size: 20px; color: #ff8a00; font-weight: bold; margin-top: 6px; }
-  .trans { font-size: 18px; color: #555; margin-top: 8px; }
-  .tip { font-size: 15px; color: #888; margin-top: 6px; }
-  button { margin-top: 14px; font-size: 18px; padding: 12px 24px; border: none; border-radius: 999px; background: #ff8a00; color: white; cursor: pointer; }
-  button:hover { background: #e67a00; }
-  .compare { background: #fff3e0; padding: 16px; border-radius: 14px; text-align: center; margin: 16px 0; }
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 16px 0; }
+  .toolbar input, .toolbar select { font-size: 16px; padding: 10px 12px; border-radius: 10px; border: 1px solid #ddd; }
+  .toolbar input { flex: 1; min-width: 200px; max-width: 400px; }
+  .legend { text-align: center; font-size: 14px; color: #666; margin-bottom: 12px; }
+  .legend span { display: inline-block; padding: 4px 10px; border-radius: 999px; margin: 0 4px; }
+  .legend .has-mean { background: #ffedd5; border: 1px solid #ff8a00; }
+  .legend .no-mean { background: #f1f5f9; border: 1px solid #cbd5e1; }
+  table { width: 100%; border-collapse: collapse; background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+  thead th { background: #ff8a00; color: white; padding: 12px 8px; font-size: 15px; position: sticky; top: 0; }
+  tbody td { padding: 10px 8px; border-bottom: 1px solid #eee; text-align: center; vertical-align: middle; font-size: 15px; }
+  tbody tr:hover { background: #fff7ed; }
+  tbody tr.has-mean { background: #fffbf0; }
+  .thai { font-size: 26px; font-weight: bold; }
+  .pinyin { color: #ff8a00; font-weight: bold; }
+  .no-trans { color: #94a3b8; font-style: italic; }
+  .remark { text-align: left; font-size: 14px; color: #475569; max-width: 260px; }
+  .play-btn { background: #ff8a00; color: white; border: none; border-radius: 999px; padding: 8px 14px; font-size: 15px; cursor: pointer; white-space: nowrap; }
+  .play-btn:hover { background: #e67a00; }
+  .add-box { background: #fff; border: 2px dashed #ffb066; border-radius: 16px; padding: 16px; margin-top: 20px; text-align: center; }
+  .add-box input { font-size: 14px; padding: 9px; margin: 4px; border-radius: 10px; border: 1px solid #ddd; width: 130px; }
 </style>
 </head>
 <body>
 
-<h1>🇹🇭 泰文發音</h1>
-<p style="text-align:center;">這 3 個是自己嵌入的 mp3，播出來是最準的泰文，不是用電腦內建的聲音</p>
+<h1>🇹🇭 泰文基礎字元 - 196 個組合</h1>
+<p style="text-align:center;">第一排 / 第一列是標題，不用發音。下面每一格都有：泰文 / 拼音 / 中文 / 英文 / 播放 / 備註</p>
 
-<div class="compare">
-  <b>🎧 建議練習方式：</b><br>
-  先按 กะ，聽短音<br>
-  再按 กา，聽長音<br>
-  來回對比 3 次，你就會聽出差別了
+<div class="toolbar">
+  <input id="searchInput" placeholder="🔍 搜尋泰文 / 拼音 / 中文 / 英文，例如 กา / 盤子" oninput="render()">
+  <select id="filterMean" onchange="render()">
+    <option value="all">全部 196 個</option>
+    <option value="has">只看有意思的</option>
+    <option value="no">只看純發音練習</option>
+  </select>
+  <select id="filterConsonant" onchange="render()">
+    <option value="all">全部子音</option>
+    <option value="ก">ก</option>
+    <option value="จ">จ</option>
+    <option value="ด">ด</option>
+    <option value="ต">ต</option>
+    <option value="บ">บ</option>
+    <option value="ป">ป</option>
+    <option value="อ">อ</option>
+  </select>
+</div>
+<div class="legend">
+  <span class="has-mean">🟠 有意思的 - 有真正翻譯</span>
+  <span class="no-mean">⚪ 純發音練習 - 顯示「無法翻譯」</span>
+</div>
+<p style="text-align:center; color:#888; font-size:14px;" id="showCount"></p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width:40px;">#</th>
+      <th>泰文</th>
+      <th>拼音</th>
+      <th>中文翻譯</th>
+      <th>英文翻譯</th>
+      <th style="width:90px;">播放</th>
+      <th>備註</th>
+    </tr>
+  </thead>
+  <tbody id="tableBody"></tbody>
+</table>
+
+<div class="add-box">
+  <h3 style="margin:0 0 10px;">➕ 新增 / 修改一個字詞</h3>
+  <input id="newThai" placeholder="泰文">
+  <input id="newPinyin" placeholder="拼音">
+  <input id="newZh" placeholder="中文翻譯">
+  <input id="newEn" placeholder="英文翻譯">
+  <input id="newFile" placeholder="mp3檔名">
+  <input id="newRemark" placeholder="備註" style="width:220px;">
+  <br>
+  <button class="play-btn" style="background:#22c55e;" onclick="addWord()">新增到表格</button>
 </div>
 
-<div id="list"></div>
-
 <script>
+// ===== 資料區：你只要改這裡 =====
+// 規則：
+// 有意思：zh / en 寫真正翻譯，remark 寫補充
+// 沒意思：zh 寫 "無法翻譯"，en 寫 "Cannot be translated"，remark 寫補充說明
 var words = [
-  {
-    thai: "กะ",
-    pinyin: "kà / 短音 a",
-    zh: "短音 a，像「嘎」短促一下就停",
-    en: "Short A sound",
-    file: "ka-short.mp3",
-    tip: "嘴巴張開，短促有力，不要拉長"
-  },
-  {
-    thai: "กา",
-    pinyin: "kaa / 長音 a",
-    zh: "長音 a，像「嘎～」要拉長",
-    en: "Long A sound",
-    file: "kaa-long.mp3",
-    tip: "跟 กะ 一樣的嘴型，但聲音要拉長一倍"
-  },
-  {
-    thai: "กิ",
-    pinyin: "kì / 短音 i",
-    zh: "短音 i，像「基」短促",
-    en: "Short I sound",
-    file: "ki-short.mp3",
-    tip: "嘴角往兩邊拉，短促的 i 音"
-  },
+  { thai: "กะ", pinyin: "kà", zh: "無法翻譯", en: "Cannot be translated", file: "", remark: "純發音練習：短音 a" },
+  { thai: "กา", pinyin: "kaa", zh: "烏鴉", en: "Crow", file: "", remark: "也是真的單字，例：กา = 烏鴉" },
+  { thai: "กิ", pinyin: "kì", zh: "無法翻譯", en: "Cannot be translated", file: "", remark: "純發音練習：短音 i" },
+  { thai: "จา", pinyin: "jaa", zh: "無法翻譯", en: "Cannot be translated", file: "", remark: "單獨無法翻譯，如果加上 น 就會是盤子的意思 (จาน)" },
+  { thai: "ตา", pinyin: "taa", zh: "眼睛 / 外公", en: "Eye / Grandfather", file: "", remark: "也是真的單字，看語境決定是眼睛還是外公" },
+  { thai: "อา", pinyin: "aa", zh: "啊", en: "Ah (interjection)", file: "", remark: "感嘆詞，例：อา！= 啊！" },
+  // 👇 你的 196 個就從這裡繼續加，照上面格式複製就好
 ];
 
 function speak(file, thaiText) {
-  // 1. 先試著播你自己嵌入的 mp3，這個最準
-  var audio = new Audio(file);
-  audio.volume = 1.0;
-  audio.play().catch(function() {
-    // 2. 如果 mp3 還沒上傳，就先用電腦內建的頂著用
-    alert("找不到 " + file + "，請先把 mp3 上傳到 GitHub");
-    var u = new SpeechSynthesisUtterance(thaiText);
-    u.lang = 'th-TH';
-    u.rate = 1.0;
-    window.speechSynthesis.speak(u);
-  });
+  if (file) {
+    var audio = new Audio(file);
+    audio.play().catch(function() { speakBySystem(thaiText); });
+  } else {
+    speakBySystem(thaiText);
+  }
+}
+function speakBySystem(thaiText) {
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(thaiText);
+  u.lang = 'th-TH'; u.rate = 1.0; u.volume = 1;
+  var voices = window.speechSynthesis.getVoices();
+  for (var i = 0; i < voices.length; i++) {
+    if (voices[i].lang && voices[i].lang.toLowerCase().indexOf('th') === 0) { u.voice = voices[i]; break; }
+  }
+  window.speechSynthesis.speak(u);
 }
 
 function render() {
-  var list = document.getElementById('list');
-  list.innerHTML = '';
+  var keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+  var meanFilter = document.getElementById('filterMean').value;
+  var consFilter = document.getElementById('filterConsonant').value;
+  var tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  var shown = 0;
   for (var i = 0; i < words.length; i++) {
     var w = words[i];
-    var div = document.createElement('div');
-    div.className = 'card';
-    div.innerHTML = '<div class="thai">' + w.thai + '</div><div class="pinyin">' + w.pinyin + '</div><div class="trans">中文：' + w.zh + '<br>English：' + w.en + '</div><div class="tip">💡 ' + w.tip + '</div><button onclick="speak(\'' + w.file + '\', \'' + w.thai + '\')">🔊 播放發音（嵌入 mp3）</button>';
-    list.appendChild(div);
+    var isNoMean = (w.zh === "無法翻譯");
+    if (meanFilter === "has" && isNoMean) continue;
+    if (meanFilter === "no" && !isNoMean) continue;
+    if (consFilter !== "all" && w.thai.indexOf(consFilter) === -1 && w.thai !== consFilter) {
+      // 子音篩選：用第一個子音來判斷，簡單版用包含來篩
+      if (w.thai.charAt(0) !== consFilter && w.thai.indexOf(consFilter) === -1) continue;
+    }
+    if (keyword) {
+      var allText = (w.thai + " " + w.pinyin + " " + w.zh + " " + w.en + " " + w.remark).toLowerCase();
+      if (allText.indexOf(keyword) === -1) continue;
+    }
+    shown++;
+    var tr = document.createElement('tr');
+    if (!isNoMean) tr.className = 'has-mean';
+    var zhClass = isNoMean ? 'no-trans' : '';
+    var enClass = isNoMean ? 'no-trans' : '';
+    tr.innerHTML = '<td>' + (i + 1) + '</td>' +
+      '<td class="thai">' + w.thai + '</td>' +
+      '<td class="pinyin">' + w.pinyin + '</td>' +
+      '<td class="' + zhClass + '">' + w.zh + '</td>' +
+      '<td class="' + enClass + '">' + w.en + '</td>' +
+      '<td><button class="play-btn" data-file="' + (w.file || '') + '" data-thai="' + w.thai + '">🔊 播放</button></td>' +
+      '<td class="remark">' + (w.remark || '') + '</td>';
+    tbody.appendChild(tr);
   }
+  var btns = tbody.querySelectorAll('.play-btn');
+  for (var j = 0; j < btns.length; j++) {
+    (function(btn) {
+      btn.onclick = function() { speak(btn.getAttribute('data-file'), btn.getAttribute('data-thai')); };
+    })(btns[j]);
+  }
+  document.getElementById('showCount').innerText = '目前顯示 ' + shown + ' / 共 ' + words.length + ' 個';
+}
+
+function addWord() {
+  var thai = document.getElementById('newThai').value.trim();
+  if (!thai) { alert('請先輸入泰文'); return; }
+  words.push({
+    thai: thai,
+    pinyin: document.getElementById('newPinyin').value.trim(),
+    zh: document.getElementById('newZh').value.trim() || "無法翻譯",
+    en: document.getElementById('newEn').value.trim() || "Cannot be translated",
+    file: document.getElementById('newFile').value.trim(),
+    remark: document.getElementById('newRemark').value.trim()
+  });
+  render();
+  document.getElementById('newThai').value = '';
+  document.getElementById('newPinyin').value = '';
+  document.getElementById('newZh').value = '';
+  document.getElementById('newEn').value = '';
+  document.getElementById('newFile').value = '';
+  document.getElementById('newRemark').value = '';
 }
 
 render();
