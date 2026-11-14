@@ -3,39 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>泰文基礎發音學習</title>
+<title>泰文基礎字元 - 196 個完整版</title>
 <style>
-  body { font-family: sans-serif; background: #fff7ed; padding: 20px; max-width: 1200px; margin: auto; }
+  body { font-family: sans-serif; background: #fff7ed; padding: 20px; max-width: 1250px; margin: auto; }
   h1 { text-align: center; }
   .toolbar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 16px 0; }
   .toolbar input, .toolbar select { font-size: 16px; padding: 10px 12px; border-radius: 10px; border: 1px solid #ddd; }
-  .toolbar input { flex: 1; min-width: 200px; max-width: 400px; }
+  .toolbar input { flex: 1; min-width: 200px; max-width: 420px; }
   .legend { text-align: center; font-size: 14px; color: #666; margin-bottom: 12px; }
   .legend span { display: inline-block; padding: 4px 10px; border-radius: 999px; margin: 0 4px; }
   .legend .has-mean { background: #ffedd5; border: 1px solid #ff8a00; }
   .legend .no-mean { background: #f1f5f9; border: 1px solid #cbd5e1; }
-  table { width: 100%; border-collapse: collapse; background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
-  thead th { background: #ff8a00; color: white; padding: 12px 8px; font-size: 15px; position: sticky; top: 0; }
-  tbody td { padding: 10px 8px; border-bottom: 1px solid #eee; text-align: center; vertical-align: middle; font-size: 15px; }
+  .matrix-wrap { overflow: auto; background: white; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 20px; }
+  table { width: 100%; border-collapse: collapse; background: white; }
+  thead th { background: #ff8a00; color: white; padding: 10px 6px; font-size: 15px; position: sticky; top: 0; z-index: 2; }
+  thead th.corner { background: #e67a00; }
+  tbody td { padding: 8px 6px; border-bottom: 1px solid #eee; border-right: 1px solid #f1f5f9; text-align: center; vertical-align: middle; font-size: 14px; }
   tbody tr:hover { background: #fff7ed; }
   tbody tr.has-mean { background: #fffbf0; }
-  .thai { font-size: 26px; font-weight: bold; }
-  .pinyin { color: #ff8a00; font-weight: bold; }
+  .thai { font-size: 24px; font-weight: bold; line-height: 1.1; }
+  .pinyin { color: #ff8a00; font-weight: bold; font-size: 13px; }
   .no-trans { color: #94a3b8; font-style: italic; }
-  .remark { text-align: left; font-size: 14px; color: #475569; max-width: 260px; }
-  .play-btn { background: #ff8a00; color: white; border: none; border-radius: 999px; padding: 8px 14px; font-size: 15px; cursor: pointer; white-space: nowrap; }
+  .remark { text-align: left; font-size: 13px; color: #475569; max-width: 260px; line-height: 1.4; }
+  .play-btn { background: #ff8a00; color: white; border: none; border-radius: 999px; padding: 7px 12px; font-size: 14px; cursor: pointer; white-space: nowrap; }
   .play-btn:hover { background: #e67a00; }
-  .add-box { background: #fff; border: 2px dashed #ffb066; border-radius: 16px; padding: 16px; margin-top: 20px; text-align: center; }
-  .add-box input { font-size: 14px; padding: 9px; margin: 4px; border-radius: 10px; border: 1px solid #ddd; width: 130px; }
+  .vowel-head { background: #fff3e0 !important; color: #9a3412 !important; font-weight: bold; white-space: nowrap; }
+  .cons-head { background: #ff8a00; color: white; font-size: 20px; }
+  .view-btn { background: #334155; color: white; border: none; padding: 10px 18px; border-radius: 999px; cursor: pointer; font-size: 15px; }
+  .view-btn.active { background: #ff8a00; }
 </style>
 </head>
 <body>
 
-<h1>🇹🇭 泰文基礎字元 - 196 個組合</h1>
-<p style="text-align:center;">第一排 / 第一列是標題，不用發音。下面每一格都有：泰文 / 拼音 / 中文 / 英文 / 播放 / 備註</p>
+<h1>🇹🇭 泰文基礎字元 - 196 個完整版</h1>
+<p style="text-align:center;">7 個子音 x 28 個母音 = 196 個組合。第一排 / 第一列是標題，不用發音。</p>
+
+<div style="text-align:center; margin: 12px 0;">
+  <button class="view-btn active" id="btnTable" onclick="setView('table')">📋 表格模式</button>
+  <button class="view-btn" id="btnMatrix" onclick="setView('matrix')">🔲 矩陣模式（像 PDF）</button>
+</div>
 
 <div class="toolbar">
-  <input id="searchInput" placeholder="🔍 搜尋泰文 / 拼音 / 中文 / 英文，例如 กา / 盤子" oninput="render()">
+  <input id="searchInput" placeholder="🔍 搜尋泰文 / 拼音 / 中文 / 英文 / 備註，例如 กา / 烏鴉 / 盤子" oninput="render()">
   <select id="filterMean" onchange="render()">
     <option value="all">全部 196 個</option>
     <option value="has">只看有意思的</option>
@@ -58,47 +67,156 @@
 </div>
 <p style="text-align:center; color:#888; font-size:14px;" id="showCount"></p>
 
-<table>
-  <thead>
-    <tr>
-      <th style="width:40px;">#</th>
-      <th>泰文</th>
-      <th>拼音</th>
-      <th>中文翻譯</th>
-      <th>英文翻譯</th>
-      <th style="width:90px;">播放</th>
-      <th>備註</th>
-    </tr>
-  </thead>
-  <tbody id="tableBody"></tbody>
-</table>
-
-<div class="add-box">
-  <h3 style="margin:0 0 10px;">➕ 新增 / 修改一個字詞</h3>
-  <input id="newThai" placeholder="泰文">
-  <input id="newPinyin" placeholder="拼音">
-  <input id="newZh" placeholder="中文翻譯">
-  <input id="newEn" placeholder="英文翻譯">
-  <input id="newFile" placeholder="mp3檔名">
-  <input id="newRemark" placeholder="備註" style="width:220px;">
-  <br>
-  <button class="play-btn" style="background:#22c55e;" onclick="addWord()">新增到表格</button>
+<div class="matrix-wrap" id="tableWrap">
+  <table id="mainTable">
+    <thead id="tableHead"></thead>
+    <tbody id="tableBody"></tbody>
+  </table>
 </div>
 
 <script>
-// ===== 資料區：你只要改這裡 =====
-// 規則：
-// 有意思：zh / en 寫真正翻譯，remark 寫補充
-// 沒意思：zh 寫 "無法翻譯"，en 寫 "Cannot be translated"，remark 寫補充說明
-var words = [
-  { thai: "กะ", pinyin: "kà", zh: "無法翻譯", en: "Cannot be translated", file: "", remark: "純發音練習：短音 a" },
-  { thai: "กา", pinyin: "kaa", zh: "烏鴉", en: "Crow", file: "", remark: "也是真的單字，例：กา = 烏鴉" },
-  { thai: "กิ", pinyin: "kì", zh: "無法翻譯", en: "Cannot be translated", file: "", remark: "純發音練習：短音 i" },
-  { thai: "จา", pinyin: "jaa", zh: "無法翻譯", en: "Cannot be translated", file: "", remark: "單獨無法翻譯，如果加上 น 就會是盤子的意思 (จาน)" },
-  { thai: "ตา", pinyin: "taa", zh: "眼睛 / 外公", en: "Eye / Grandfather", file: "", remark: "也是真的單字，看語境決定是眼睛還是外公" },
-  { thai: "อา", pinyin: "aa", zh: "啊", en: "Ah (interjection)", file: "", remark: "感嘆詞，例：อา！= 啊！" },
-  // 👇 你的 196 個就從這裡繼續加，照上面格式複製就好
+// ===== 1. 子音定義 =====
+var consonants = [
+  { ch: "ก", pinyin: "k" },
+  { ch: "จ", pinyin: "j" },
+  { ch: "ด", pinyin: "d" },
+  { ch: "ต", pinyin: "t" },
+  { ch: "บ", pinyin: "b" },
+  { ch: "ป", pinyin: "p" },
+  { ch: "อ", pinyin: "" }
 ];
+
+// ===== 2. 母音定義：28 個 =====
+// make: 把子音放進母音模板裡，變成完整泰文
+// sound: 拼音用的母音音，descZh / descEn: 發音說明
+var vowels = [
+  { name: "อะ", make: function(c){ return c + "ะ"; }, sound: "a", descZh: "短音 a", descEn: "Short A" },
+  { name: "า", make: function(c){ return c + "า"; }, sound: "aa", descZh: "長音 a", descEn: "Long A" },
+  { name: "ิ", make: function(c){ return c + "ิ"; }, sound: "i", descZh: "短音 i", descEn: "Short I" },
+  { name: "ี", make: function(c){ return c + "ี"; }, sound: "ii", descZh: "長音 i", descEn: "Long I" },
+  { name: "ึ", make: function(c){ return c + "ึ"; }, sound: "ue", descZh: "短音 ue", descEn: "Short UE" },
+  { name: "ื", make: function(c){ return c + "ื"; }, sound: "uee", descZh: "長音 ue", descEn: "Long UE" },
+  { name: "ุ", make: function(c){ return c + "ุ"; }, sound: "u", descZh: "短音 u", descEn: "Short U" },
+  { name: "ู", make: function(c){ return c + "ู"; }, sound: "uu", descZh: "長音 u", descEn: "Long U" },
+  { name: "เ-ะ", make: function(c){ return "เ" + c + "ะ"; }, sound: "e", descZh: "短音 e", descEn: "Short E" },
+  { name: "เ-", make: function(c){ return "เ" + c; }, sound: "ee", descZh: "長音 e", descEn: "Long E" },
+  { name: "แ-ะ", make: function(c){ return "แ" + c + "ะ"; }, sound: "ae", descZh: "短音 ae", descEn: "Short AE" },
+  { name: "แ-", make: function(c){ return "แ" + c; }, sound: "aee", descZh: "長音 ae", descEn: "Long AE" },
+  { name: "โ-ะ", make: function(c){ return "โ" + c + "ะ"; }, sound: "o", descZh: "短音 o", descEn: "Short O" },
+  { name: "โ-", make: function(c){ return "โ" + c; }, sound: "oo", descZh: "長音 o", descEn: "Long O" },
+  { name: "เ-าะ", make: function(c){ return "เ" + c + "าะ"; }, sound: "o", descZh: "短音 o (าะ)", descEn: "Short O (aw)" },
+  { name: "-อ", make: function(c){ return c + "อ"; }, sound: "or", descZh: "長音 o (อ)", descEn: "Long O (or)" },
+  { name: "เ-อะ", make: function(c){ return "เ" + c + "อะ"; }, sound: "oe", descZh: "短音 oe", descEn: "Short OE" },
+  { name: "เ-อ", make: function(c){ return "เ" + c + "อ"; }, sound: "oee", descZh: "長音 oe", descEn: "Long OE" },
+  { name: "เ-ียะ", make: function(c){ return "เ" + c + "ียะ"; }, sound: "ia", descZh: "短音 ia", descEn: "Short IA" },
+  { name: "เ-ีย", make: function(c){ return "เ" + c + "ีย"; }, sound: "iia", descZh: "長音 ia", descEn: "Long IA" },
+  { name: "เ-ือะ", make: function(c){ return "เ" + c + "ือะ"; }, sound: "uea", descZh: "短音 uea", descEn: "Short UEA" },
+  { name: "เ-ือ", make: function(c){ return "เ" + c + "ือ"; }, sound: "ueea", descZh: "長音 uea", descEn: "Long UEA" },
+  { name: "-ัวะ", make: function(c){ return c + "ัวะ"; }, sound: "ua", descZh: "短音 ua", descEn: "Short UA" },
+  { name: "-ัว", make: function(c){ return c + "ัว"; }, sound: "uua", descZh: "長音 ua", descEn: "Long UA" },
+  { name: "ไ-", make: function(c){ return "ไ" + c; }, sound: "ai", descZh: "ai 音 (ไ-)", descEn: "AI (mai malai)" },
+  { name: "ใ-", make: function(c){ return "ใ" + c; }, sound: "ai", descZh: "ai 音 (ใ-)", descEn: "AI (mai muan)" },
+  { name: "เ-า", make: function(c){ return "เ" + c + "า"; }, sound: "ao", descZh: "ao 音", descEn: "AO" },
+  { name: "เ-า (2)", make: function(c){ return "เ" + c + "า"; }, sound: "ao", descZh: "ao 音", descEn: "AO" }
+];
+
+// ===== 3. 有意思的字典：我幫你挑的常見單字 =====
+// 格式：thai: { zh, en, remark }
+// 沒寫在這裡的，就會自動變成 無法翻譯 / Cannot be translated
+var meaningful = {
+  "กา": { zh: "烏鴉", en: "Crow", remark: "也是真的單字。例：กา = 烏鴉" },
+  "ตา": { zh: "眼睛 / 外公", en: "Eye / Grandfather", remark: "也是真的單字，看語境。ตา = 眼睛，也叫外公" },
+  "จา": { zh: "無法翻譯", en: "Cannot be translated", remark: "單獨無法翻譯，如果加上 น 就會是盤子的意思 (จาน = 盤子)" },
+  "จาน": { zh: "盤子", en: "Plate", remark: "由 จา + น 組成，จาน = 盤子" },
+  "อา": { zh: "啊", en: "Ah", remark: "感嘆詞。例：อา！= 啊！" },
+  "บา": { zh: "瘋了 / 傻了", en: "Crazy", remark: "口語常用。例：บ้า = 瘋了 (加 ้ 變聲調)" },
+  "ปา": { zh: "丟 / 扔", en: "To throw", remark: "動詞。例：ปา = 丟、扔" },
+  "ดา": { zh: "星星 (名字常用)", en: "Star (name)", remark: "常當女生名字，ดาว = 星星" },
+  "ดี": { zh: "好", en: "Good", remark: "超常用！ดี = 好。例：ดีมาก = 很好" },
+  "ตี": { zh: "打", en: "To hit", remark: "動詞。例：ตี = 打" },
+  "ปี": { zh: "年", en: "Year", remark: "常用。例：ปีใหม่ = 新年" },
+  "มี": { zh: "有", en: "To have", remark: "超常用！มี = 有" },
+  "กู": { zh: "我 (粗俗)", en: "I (rude)", remark: "注意：กู 是很粗俗的「我」，不要對長輩用" },
+  "จู": { zh: "無法翻譯", en: "Cannot be translated", remark: "單獨較少用，常出現在名字裡" },
+  "ดู": { zh: "看", en: "To look / Watch", remark: "超常用！ดู = 看。例：ดูหนัง = 看電影" },
+  "ตู": { zh: "櫃子 / 你 (粗俗)", en: "Cabinet / You (rude)", remark: "ตู้ = 櫃子，ตู 是粗俗的「你」" },
+  "บู": { zh: "無法翻譯", en: "Cannot be translated", remark: "單獨較少用，常見於外來語" },
+  "ปู": { zh: "螃蟹 / 鋪", en: "Crab / To lay", remark: "也是真的單字。ปู = 螃蟹，也指鋪 (鋪床)" },
+  "อู": { zh: "無法翻譯", en: "Cannot be translated", remark: "單獨較少用，常出現在 อู่ = 車庫" },
+  "เกะ": { zh: "無法翻譯", en: "Cannot be translated", remark: "純發音練習。注意跟 แกะ (羊) 不同" },
+  "เก": { zh: "無法翻譯", en: "Cannot be translated", remark: "純發音練習。常出現在 เก๋ = 酷" },
+  "แกะ": { zh: "羊 / 拆開", en: "Sheep / To unwrap", remark: "也是真的單字。แกะ = 羊，也指拆開" },
+  "แก่": { zh: "老", en: "Old", remark: "常用。แก่ = 老。例：แก่แล้ว = 老了" },
+  "โกะ": { zh: "無法翻譯", en: "Cannot be translated", remark: "純發音練習" },
+  "โก": { zh: "無法翻譯", en: "Cannot be translated", remark: "純發音練習。常出現在 โกหก = 說謊" },
+  "เกาะ": { zh: "島", en: "Island", remark: "也是真的單字。เกาะ = 島。例：เกาะสมุย = 蘇梅島" },
+  "กอ": { zh: "叢 / 群", en: "Clump / Group", remark: "例：กอไผ่ = 竹叢" },
+  "เกอะ": { zh: "無法翻譯", en: "Cannot be translated", remark: "純發音練習" },
+  "เกอ": { zh: "無法翻譯", en: "Cannot be translated", remark: "純發音練習" },
+  "เกียะ": { zh: "無法翻譯", en: "Cannot be translated", remark: "純發音練習。注意發音要短促" },
+  "เกีย": { zh: "無法翻譯", en: "Cannot be translated", remark: "純發音練習" },
+  "เกือะ": { zh: "無法翻譯", en: "Cannot be translated", remark: "純發音練習" },
+  "เกือ": { zh: "幾乎", en: "Almost", remark: "常用。เกือบ = 幾乎 (加 บ)" },
+  "กัวะ": { zh: "無法翻譯", en: "Cannot be translated", remark: "純發音練習" },
+  "กัว": { zh: "無法翻譯", en: "Cannot be translated", remark: "純發音練習。常出現在 กลัว = 害怕" },
+  "ไก": { zh: "無法翻譯", en: "Cannot be translated", remark: "單獨較少用。ไก่ = 雞 (加 ่)" },
+  "ไก่": { zh: "雞", en: "Chicken", remark: "超常用！ไก่ = 雞" },
+  "ใจ": { zh: "心", en: "Heart / Mind", remark: "超常用！ใจ = 心。例：เข้าใจ = 了解" },
+  "ได": { zh: "無法翻譯", en: "Cannot be translated", remark: "單獨較少用。ได้ = 可以 / 得到" },
+  "ได้": { zh: "可以 / 得到", en: "Can / To get", remark: "超常用！ได้ = 可以" },
+  "ไต": { zh: "腎 / 滑", en: "Kidney / To slide", remark: "ไต = 腎，也指滑" },
+  "ใบ": { zh: "葉子 / 張", en: "Leaf / Sheet", remark: "常用。ใบ = 葉子，也是量詞" },
+  "ไป": { zh: "去", en: "To go", remark: "超常用！ไป = 去" },
+  "ไอ": { zh: "咳嗽 / 冰", en: "Cough / Ice", remark: "ไอ = 咳嗽，ไอศกรีม = 冰淇淋" },
+  "เกา": { zh: "抓癢", en: "To scratch", remark: "動詞。เกา = 抓癢" }
+};
+
+// ===== 4. 自動生成 196 個 =====
+var words = [];
+consonants.forEach(function(cons) {
+  vowels.forEach(function(vow, vIdx) {
+    var thai = vow.make(cons.ch);
+    // อ 是特殊子音：如果母音是 ะ/า 等，อ + 母音會變成 อะ / อา 等，上面 make 已經處理了
+    // 但 อ + เ- 等會變成 เอะ / เอ 等，泰文正確寫法是 เอะ，不是 เอะ，所以修正一下
+    if (cons.ch === "อ" && thai.indexOf("เอ") === 0) {
+      thai = thai.replace("เอ", "เ");
+    }
+    if (cons.ch === "อ" && thai.indexOf("แ") === 0) {
+      // แอ 保持不變
+    }
+    var pinyin = (cons.pinyin ? cons.pinyin : "") + vow.sound;
+    if (cons.ch === "อ") pinyin = vow.sound; // อ 不發音，只念母音
+    var entry = meaningful[thai];
+    var zh, en, remark;
+    if (entry) {
+      zh = entry.zh; en = entry.en; remark = entry.remark;
+    } else {
+      zh = "無法翻譯"; en = "Cannot be translated";
+      remark = "純發音練習：" + vow.descZh + " + 子音 " + cons.ch;
+      // 如果是有特殊補充的，例如 จา，我們已經在 meaningful 裡寫了，就不會走到這裡
+    }
+    // 如果是 meaningful 但它自己也寫了無法翻譯，就保持它寫的備註
+    words.push({
+      thai: thai,
+      pinyin: pinyin,
+      zh: zh,
+      en: en,
+      file: "",
+      remark: remark,
+      cons: cons.ch,
+      vowel: vow.name
+    });
+  });
+});
+
+var currentView = 'table';
+
+function setView(view) {
+  currentView = view;
+  document.getElementById('btnTable').className = 'view-btn' + (view === 'table' ? ' active' : '');
+  document.getElementById('btnMatrix').className = 'view-btn' + (view === 'matrix' ? ' active' : '');
+  render();
+}
 
 function speak(file, thaiText) {
   if (file) {
@@ -119,67 +237,91 @@ function speakBySystem(thaiText) {
   window.speechSynthesis.speak(u);
 }
 
-function render() {
+function getFiltered() {
   var keyword = document.getElementById('searchInput').value.trim().toLowerCase();
   var meanFilter = document.getElementById('filterMean').value;
   var consFilter = document.getElementById('filterConsonant').value;
-  var tbody = document.getElementById('tableBody');
-  tbody.innerHTML = '';
-  var shown = 0;
+  var out = [];
   for (var i = 0; i < words.length; i++) {
     var w = words[i];
     var isNoMean = (w.zh === "無法翻譯");
     if (meanFilter === "has" && isNoMean) continue;
     if (meanFilter === "no" && !isNoMean) continue;
-    if (consFilter !== "all" && w.thai.indexOf(consFilter) === -1 && w.thai !== consFilter) {
-      // 子音篩選：用第一個子音來判斷，簡單版用包含來篩
-      if (w.thai.charAt(0) !== consFilter && w.thai.indexOf(consFilter) === -1) continue;
-    }
+    if (consFilter !== "all" && w.cons !== consFilter) continue;
     if (keyword) {
-      var allText = (w.thai + " " + w.pinyin + " " + w.zh + " " + w.en + " " + w.remark).toLowerCase();
+      var allText = (w.thai + " " + w.pinyin + " " + w.zh + " " + w.en + " " + w.remark + " " + w.vowel).toLowerCase();
       if (allText.indexOf(keyword) === -1) continue;
     }
-    shown++;
-    var tr = document.createElement('tr');
-    if (!isNoMean) tr.className = 'has-mean';
-    var zhClass = isNoMean ? 'no-trans' : '';
-    var enClass = isNoMean ? 'no-trans' : '';
-    tr.innerHTML = '<td>' + (i + 1) + '</td>' +
-      '<td class="thai">' + w.thai + '</td>' +
-      '<td class="pinyin">' + w.pinyin + '</td>' +
-      '<td class="' + zhClass + '">' + w.zh + '</td>' +
-      '<td class="' + enClass + '">' + w.en + '</td>' +
-      '<td><button class="play-btn" data-file="' + (w.file || '') + '" data-thai="' + w.thai + '">🔊 播放</button></td>' +
-      '<td class="remark">' + (w.remark || '') + '</td>';
-    tbody.appendChild(tr);
+    out.push(w);
   }
-  var btns = tbody.querySelectorAll('.play-btn');
-  for (var j = 0; j < btns.length; j++) {
-    (function(btn) {
-      btn.onclick = function() { speak(btn.getAttribute('data-file'), btn.getAttribute('data-thai')); };
-    })(btns[j]);
-  }
-  document.getElementById('showCount').innerText = '目前顯示 ' + shown + ' / 共 ' + words.length + ' 個';
+  return out;
 }
 
-function addWord() {
-  var thai = document.getElementById('newThai').value.trim();
-  if (!thai) { alert('請先輸入泰文'); return; }
-  words.push({
-    thai: thai,
-    pinyin: document.getElementById('newPinyin').value.trim(),
-    zh: document.getElementById('newZh').value.trim() || "無法翻譯",
-    en: document.getElementById('newEn').value.trim() || "Cannot be translated",
-    file: document.getElementById('newFile').value.trim(),
-    remark: document.getElementById('newRemark').value.trim()
-  });
-  render();
-  document.getElementById('newThai').value = '';
-  document.getElementById('newPinyin').value = '';
-  document.getElementById('newZh').value = '';
-  document.getElementById('newEn').value = '';
-  document.getElementById('newFile').value = '';
-  document.getElementById('newRemark').value = '';
+function render() {
+  var filtered = getFiltered();
+  var head = document.getElementById('tableHead');
+  var body = document.getElementById('tableBody');
+  head.innerHTML = ''; body.innerHTML = '';
+
+  if (currentView === 'table') {
+    head.innerHTML = '<tr><th style="width:40px;">#</th><th>泰文</th><th>拼音</th><th>中文翻譯</th><th>英文翻譯</th><th style="width:90px;">播放</th><th>備註</th></tr>';
+    filtered.forEach(function(w, idx) {
+      var isNoMean = (w.zh === "無法翻譯");
+      var tr = document.createElement('tr');
+      if (!isNoMean) tr.className = 'has-mean';
+      var zhClass = isNoMean ? 'no-trans' : '';
+      var enClass = isNoMean ? 'no-trans' : '';
+      tr.innerHTML = '<td>' + (idx + 1) + '</td>' +
+        '<td class="thai">' + w.thai + '</td>' +
+        '<td class="pinyin">' + w.pinyin + '</td>' +
+        '<td class="' + zhClass + '">' + w.zh + '</td>' +
+        '<td class="' + enClass + '">' + w.en + '</td>' +
+        '<td><button class="play-btn" data-thai="' + w.thai + '">🔊 播放</button></td>' +
+        '<td class="remark">' + (w.remark || '') + '</td>';
+      body.appendChild(tr);
+    });
+  } else {
+    // 矩陣模式：第一排是子音，第一列是母音
+    var headerRow = '<tr><th class="corner">母音 \\ 子音</th>';
+    consonants.forEach(function(c) {
+      headerRow += '<th class="cons-head">' + c.ch + '</th>';
+    });
+    headerRow += '</tr>';
+    head.innerHTML = headerRow;
+    // 按母音分組
+    vowels.forEach(function(vow) {
+      var tr = document.createElement('tr');
+      var rowHtml = '<td class="vowel-head">' + vow.name + '</td>';
+      consonants.forEach(function(cons) {
+        var found = null;
+        for (var i = 0; i < words.length; i++) {
+          if (words[i].cons === cons.ch && words[i].vowel === vow.name) { found = words[i]; break; }
+        }
+        if (!found) { rowHtml += '<td></td>'; return; }
+        // 矩陣裡如果被篩選掉，就顯示灰色
+        var inFiltered = filtered.indexOf(found) !== -1;
+        if (!inFiltered) { rowHtml += '<td style="opacity:0.2;">-</td>'; return; }
+        var isNoMean = (found.zh === "無法翻譯");
+        var bg = isNoMean ? '' : 'background:#fffbf0;';
+        rowHtml += '<td style="' + bg + '"><div class="thai">' + found.thai + '</div>' +
+          '<div class="pinyin">' + found.pinyin + '</div>' +
+          '<div style="font-size:13px;">' + found.zh + '</div>' +
+          '<div style="font-size:12px; color:#888;">' + found.en + '</div>' +
+          '<button class="play-btn" data-thai="' + found.thai + '" style="margin-top:6px;">🔊</button>' +
+          '<div class="remark" style="margin-top:4px;">' + (found.remark || '') + '</div></td>';
+      });
+      tr.innerHTML = rowHtml;
+      body.appendChild(tr);
+    });
+  }
+
+  var btns = body.querySelectorAll('.play-btn');
+  for (var j = 0; j < btns.length; j++) {
+    (function(btn) {
+      btn.onclick = function() { speak("", btn.getAttribute('data-thai')); };
+    })(btns[j]);
+  }
+  document.getElementById('showCount').innerText = '目前顯示 ' + filtered.length + ' / 共 ' + words.length + ' 個 (7 子音 x 28 母音 = 196)';
 }
 
 render();
