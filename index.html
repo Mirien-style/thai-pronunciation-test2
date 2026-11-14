@@ -220,7 +220,7 @@ function setView(view) {
 
 function speak(file, thaiText) {
   if (file) {
-    var audio = new Audio(file);
+    var audio = new Audio("audio/" + file);
     audio.play().catch(function() { speakBySystem(thaiText); });
   } else {
     speakBySystem(thaiText);
