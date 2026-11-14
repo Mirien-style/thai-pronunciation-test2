@@ -178,12 +178,7 @@ consonants.forEach(function(cons) {
     var thai = vow.make(cons.ch);
     // อ 是特殊子音：如果母音是 ะ/า 等，อ + 母音會變成 อะ / อา 等，上面 make 已經處理了
     // 但 อ + เ- 等會變成 เอะ / เอ 等，泰文正確寫法是 เอะ，不是 เอะ，所以修正一下
-    if (cons.ch === "อ" && thai.indexOf("เอ") === 0) {
-      thai = thai.replace("เอ", "เ");
-    }
-    if (cons.ch === "อ" && thai.indexOf("แ") === 0) {
-      // แอ 保持不變
-    }
+    
     var pinyin = (cons.pinyin ? cons.pinyin : "") + vow.sound;
     if (cons.ch === "อ") pinyin = vow.sound; // อ 不發音，只念母音
     var entry = meaningful[thai];
